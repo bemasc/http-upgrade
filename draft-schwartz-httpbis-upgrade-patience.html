@@ -1058,7 +1058,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <div id="internal-metadata" class="document-information">
 <dl id="identifiers">
 <dt class="label-workgroup">Workgroup:</dt>
-<dd class="workgroup">HTTP</dd>
+<dd class="workgroup">HTTPBIS</dd>
 <dt class="label-internet-draft">Internet-Draft:</dt>
 <dd class="internet-draft">draft-schwartz-httpbis-upgrade-patience-latest</dd>
 <dt class="label-updates">Updates:</dt>
@@ -1218,7 +1218,7 @@ appear in all capitals, as shown here.<a href="#section-1-1" class="pilcrow">¶<
       <h2 id="name-background">
 <a href="#section-2" class="section-number selfRef">2. </a><a href="#name-background" class="section-name selfRef">Background</a>
       </h2>
-<p id="section-2-1">In HTTP/1.1, a client is permitted to send an "Upgrade" request header field to indicate that it would like to convert this connection to use a protocol other than HTTP/1.1 (<span>[<a href="#RFC9110" class="cite xref">RFC9110</a>], <a href="https://rfc-editor.org/rfc/rfc9110#section-7.8" class="relref">Section 7.8</a></span>).  The server replies with a "101 (Switching Protocols)" status code if it accepts the protocol change.  However, that specification also permits the server to reject an Upgrade request:<a href="#section-2-1" class="pilcrow">¶</a></p>
+<p id="section-2-1">In HTTP/1.1, a client is permitted to send an "Upgrade" request header field (<span>[<a href="#RFC9110" class="cite xref">RFC9110</a>], <a href="https://rfc-editor.org/rfc/rfc9110#section-7.8" class="relref">Section 7.8</a></span>) to indicate that it would like to use this connection for a protocol other than HTTP/1.1.  The server replies with a "101 (Switching Protocols)" status code if it accepts the protocol change.  However, that specification also permits the server to reject the upgrade request:<a href="#section-2-1" class="pilcrow">¶</a></p>
 <ul class="normal ulEmpty">
 <li class="normal ulEmpty" id="section-2-2.1">
           <p id="section-2-2.1.1">A server <span class="bcp14">MAY</span> ignore a received Upgrade header field if it wishes to continue using the current protocol on that connection.<a href="#section-2-2.1.1" class="pilcrow">¶</a></p>
@@ -1226,11 +1226,11 @@ appear in all capitals, as shown here.<a href="#section-1-1" class="pilcrow">¶<
       </ul>
 <p id="section-2-3">This rejection of the upgrade is common, and can happen for a variety of reasons:<a href="#section-2-3" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-2-4.1">The server does not support any of the client's indicated Upgrade Tokens (i.e., the client's proposed new protocols), so it interprets the request without the upgrade.<a href="#section-2-4.1" class="pilcrow">¶</a>
+<li class="normal" id="section-2-4.1">The server does not support any of the client's indicated Upgrade Tokens (i.e., the client's proposed new protocols), so it continues to use HTTP/1.1.<a href="#section-2-4.1" class="pilcrow">¶</a>
 </li>
-        <li class="normal" id="section-2-4.2">The server knows that an upgrade to the offered protocol will not provide any improvement over HTTP/1.1 for this resource, so it chooses to respond in HTTP/1.1.<a href="#section-2-4.2" class="pilcrow">¶</a>
+        <li class="normal" id="section-2-4.2">The server knows that an upgrade to the offered protocol will not provide any improvement over HTTP/1.1 for this request to this resource, so it chooses to respond in HTTP/1.1.<a href="#section-2-4.2" class="pilcrow">¶</a>
 </li>
-        <li class="normal" id="section-2-4.3">The server requires the client to authenticate before processing the Upgrade, so it replies with the status code "401 (Authentication Required)" and provides a challenge in an "Authorization" response header (<span>[<a href="#RFC9110" class="cite xref">RFC9110</a>], <a href="https://rfc-editor.org/rfc/rfc9110#section-11.6.2" class="relref">Section 11.6.2</a></span>).<a href="#section-2-4.3" class="pilcrow">¶</a>
+        <li class="normal" id="section-2-4.3">The server requires the client to authenticate before upgrading the protocol, so it replies with the status code "401 (Authentication Required)" and provides a challenge in an "Authorization" response header (<span>[<a href="#RFC9110" class="cite xref">RFC9110</a>], <a href="https://rfc-editor.org/rfc/rfc9110#section-11.6.2" class="relref">Section 11.6.2</a></span>).<a href="#section-2-4.3" class="pilcrow">¶</a>
 </li>
         <li class="normal" id="section-2-4.4">The resource has moved, so the server replies with a 3XX redirect status code (<span>[<a href="#RFC9110" class="cite xref">RFC9110</a>], <a href="https://rfc-editor.org/rfc/rfc9110#section-3.4" class="relref">Section 3.4</a></span>).<a href="#section-2-4.4" class="pilcrow">¶</a>
 </li>
@@ -1250,7 +1250,7 @@ appear in all capitals, as shown here.<a href="#section-1-1" class="pilcrow">¶<
 <a href="#section-3.1" class="section-number selfRef">3.1. </a><a href="#name-patience" class="section-name selfRef">Patience</a>
         </h3>
 <p id="section-3.1-1">If the server accepts the upgrade, it interprets the subsequent bytes in accordance with the new protocol.  If it rejects the upgrade, it interprets those bytes as HTTP/1.1.  However, the client doesn't know which interpretation the server will take until it receives the server's response status code.  To prevent protocol confusion, clients <span class="bcp14">MUST NOT</span> send any data after an HTTP/1.1 request until it learns whether the upgrade was accepted.<a href="#section-3.1-1" class="pilcrow">¶</a></p>
-<p id="section-3.1-2">Protocol confusion is not limited to incidental failures: it can also lead to serious security problems such as request smuggling attacks.  These attacks are possible when the HTTP client is passing data to the server from an untrusted party, as is common in HTTP.  In the event of protocol confusion, this data could be misparsed as an HTTP request from the client, potentially authenticated by connection-wide authentication such as TLS Client Certificates.  This could allow the attacker to exercise privileges that are reserved for the client.<a href="#section-3.1-2" class="pilcrow">¶</a></p>
+<p id="section-3.1-2">Protocol confusion is not limited to incidental failures: it can also lead to serious security problems.  Request smuggling attacks are possible when the HTTP client is passing data to the server from an untrusted party, as is common in HTTP.  In the event of protocol confusion, this data could be misparsed as an HTTP request from the client, potentially authenticated by a TLS client certificate.  This could allow the attacker to exercise privileges that are reserved for the client.<a href="#section-3.1-2" class="pilcrow">¶</a></p>
 <p id="section-3.1-3">A related category of attacks uses request smuggling to exploit vulnerabilities in the server's request parsing logic.  These attacks apply when the HTTP client is trusted, but the payload data source is not.<a href="#section-3.1-3" class="pilcrow">¶</a></p>
 </section>
 </div>
@@ -1259,7 +1259,7 @@ appear in all capitals, as shown here.<a href="#section-1-1" class="pilcrow">¶<
         <h3 id="name-tolerance">
 <a href="#section-3.2" class="section-number selfRef">3.2. </a><a href="#name-tolerance" class="section-name selfRef">Tolerance</a>
         </h3>
-<p id="section-3.2-1">If the server rejects the Upgrade, the connection can continue to be used for HTTP/1.1.  There is no requirement to close the connection in response to an Upgrade rejection, and keeping the connection open has performance advantages if additional requests to this server are likely.  Accordingly, clients <span class="bcp14">SHOULD NOT</span> close the connection in response to a rejected upgrade.<a href="#section-3.2-1" class="pilcrow">¶</a></p>
+<p id="section-3.2-1">If the server rejects the Upgrade, the connection can continue to be used for HTTP/1.1.  There is no requirement to close the connection in response to an Upgrade rejection, and keeping the connection open has performance advantages if additional HTTP requests to this server are likely.  In these situations, clients <span class="bcp14">SHOULD NOT</span> close the connection in response to a rejected upgrade.<a href="#section-3.2-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -1285,7 +1285,7 @@ This section considers the impact of the requirements from <a href="#requirement
 <p id="section-4.1-3">That text is hereby updated as follows:<a href="#section-4.1-3" class="pilcrow">¶</a></p>
 <ul class="normal ulEmpty">
 <li class="normal ulEmpty" id="section-4.1-4.1">
-            <p id="section-4.1-4.1.1">A client cannot begin using an upgraded protocol on the connection until it receives confirmation that the server has accepted the upgrade.<a href="#section-4.1-4.1.1" class="pilcrow">¶</a></p>
+            <p id="section-4.1-4.1.1">A client cannot begin using an upgraded protocol on the connection until it has completely sent the request message and received confirmation that the server has accepted the upgrade.<a href="#section-4.1-4.1.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
 </section>
