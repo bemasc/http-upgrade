@@ -134,8 +134,8 @@ Table of Contents
    in accordance with the new protocol.  If it rejects the upgrade, it
    interprets those bytes as HTTP/1.1.  However, the client doesn't know
    which interpretation the server will take until it receives the
-   server's response status code.  To prevent protocol confusion,
-   clients MUST NOT send any data after an HTTP/1.1 request until it
+   server's response status code.  To prevent protocol confusion, a
+   client MUST NOT send any data after an HTTP/1.1 request until it
    learns whether the upgrade was accepted.
 
    Protocol confusion is not limited to incidental failures: it can also
